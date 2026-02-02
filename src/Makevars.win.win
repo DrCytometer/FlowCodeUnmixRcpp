@@ -1,0 +1,8 @@
+# Use C++17
+CXX_STD = CXX17
+
+# Flags for Windows
+PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) -DARMA_NO_DEBUG
+
+# Link to OpenMP and Linear Algebra libraries
+PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)

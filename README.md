@@ -1,0 +1,46 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# FlowCodeUnmixRcpp
+
+<!-- badges: start -->
+
+<!-- badges: end -->
+
+The goal of FlowCodeUnmixRcpp is to speed up the unmixing of
+FlowCode-barcoded spectral flow cytometry data. It is an add-on package
+to `FlowCodeUnmix` using fast per-cell unmixing in C++.
+
+## Installation
+
+You will need [Rtools](https://cran.r-project.org/bin/windows/Rtools/)
+(on Windows) or [Xcode command line
+tools](https://teuder.github.io/rcpp4everyone_en/020_install.html) (on
+Mac). Install this first.
+
+You can install the development version of FlowCodeUnmixRcpp like so:
+
+``` r
+remotes::install_github("DrCytometer/FlowCodeUnmixRcpp")
+```
+
+You will need
+[AutoSpectral](https://github.com/DrCytometer/AutoSpectral),
+[FlowCodeUnmix](https://github.com/DrCytometer/FlowCodeUnmix) and their
+dependencies for full functionality.
+
+``` r
+# Install Bioconductor packages
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install(c("flowWorkspace", "flowCore", "PeacoQC", "FlowSOM"))
+
+# You'll need devtools or remotes to install from GitHub.
+# install.packages("devtools")
+remotes::install_github("DrCytometer/AutoSpectral")
+remotes::install_github("DrCytometer/FlowCodeUnmix")
+```
+
+See
+[AutoSpectral](https://drcytometer.github.io/AutoSpectral/index.html)
+and `FlowCodeUnmix` for workflow and instructions.
