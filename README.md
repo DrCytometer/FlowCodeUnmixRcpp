@@ -43,4 +43,6 @@ remotes::install_github("DrCytometer/FlowCodeUnmix")
 
 See
 [AutoSpectral](https://drcytometer.github.io/AutoSpectral/index.html)
-and `FlowCodeUnmix` for workflow and instructions.
+and
+[FlowCodeUnmix](https://drcytometer.github.io/FlowCodeUnmix/articles/FlowCode_Unmixing_Workflow.html)
+for workflow and instructions.
