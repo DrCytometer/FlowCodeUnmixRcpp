@@ -11,44 +11,37 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// optimize_flowcode_unmix
-arma::mat optimize_flowcode_unmix(const arma::mat& raw_data, const arma::mat& unmixed, const arma::mat& combined_spectra, const arma::vec& weights, const arma::vec& pos_thresholds, const arma::uvec& af_idx, const arma::mat& af_spectra, const arma::uvec& flowcode_ids, const arma::uvec& has_flowcode, const List& combo_fret, const List& fret_delta_list, const List& fret_delta_norms, const arma::umat& flowcode_combo_logical, const std::vector<std::string>& flowcode_fluors, const std::vector<std::string>& optimize_fluors, const List& variants, const List& delta_list, const List& delta_norms, const std::vector<std::string>& all_fluor_names, const int af_idx_in_spectra, const int k, const bool weighted, const bool cell_weighting, const bool cell_weight_regularize, const int nthreads);
-RcppExport SEXP _FlowCodeUnmixRcpp_optimize_flowcode_unmix(SEXP raw_dataSEXP, SEXP unmixedSEXP, SEXP combined_spectraSEXP, SEXP weightsSEXP, SEXP pos_thresholdsSEXP, SEXP af_idxSEXP, SEXP af_spectraSEXP, SEXP flowcode_idsSEXP, SEXP has_flowcodeSEXP, SEXP combo_fretSEXP, SEXP fret_delta_listSEXP, SEXP fret_delta_normsSEXP, SEXP flowcode_combo_logicalSEXP, SEXP flowcode_fluorsSEXP, SEXP optimize_fluorsSEXP, SEXP variantsSEXP, SEXP delta_listSEXP, SEXP delta_normsSEXP, SEXP all_fluor_namesSEXP, SEXP af_idx_in_spectraSEXP, SEXP kSEXP, SEXP weightedSEXP, SEXP cell_weightingSEXP, SEXP cell_weight_regularizeSEXP, SEXP nthreadsSEXP) {
+// unmix_flowcode_pipeline_cpp
+List unmix_flowcode_pipeline_cpp(arma::mat raw_data, const arma::mat& spectra, const arma::mat& af_spectra, const CharacterVector& fluor_names, const CharacterVector& flowcode_fluors, const CharacterVector& flowcode_tags, const NumericVector& flowcode_thresholds, const CharacterVector& valid_combos, const arma::imat& flowcode_logical, const List& fret_spectra_list, const arma::vec& pos_thresholds, const CharacterVector& optimize_fluors, const List& variants, const List& delta_list, const List& delta_norms, int k_opt, int n_threads, bool optimize);
+RcppExport SEXP _FlowCodeUnmixRcpp_unmix_flowcode_pipeline_cpp(SEXP raw_dataSEXP, SEXP spectraSEXP, SEXP af_spectraSEXP, SEXP fluor_namesSEXP, SEXP flowcode_fluorsSEXP, SEXP flowcode_tagsSEXP, SEXP flowcode_thresholdsSEXP, SEXP valid_combosSEXP, SEXP flowcode_logicalSEXP, SEXP fret_spectra_listSEXP, SEXP pos_thresholdsSEXP, SEXP optimize_fluorsSEXP, SEXP variantsSEXP, SEXP delta_listSEXP, SEXP delta_normsSEXP, SEXP k_optSEXP, SEXP n_threadsSEXP, SEXP optimizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type raw_data(raw_dataSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type unmixed(unmixedSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type combined_spectra(combined_spectraSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type weights(weightsSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type pos_thresholds(pos_thresholdsSEXP);
-    Rcpp::traits::input_parameter< const arma::uvec& >::type af_idx(af_idxSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type raw_data(raw_dataSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type spectra(spectraSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type af_spectra(af_spectraSEXP);
-    Rcpp::traits::input_parameter< const arma::uvec& >::type flowcode_ids(flowcode_idsSEXP);
-    Rcpp::traits::input_parameter< const arma::uvec& >::type has_flowcode(has_flowcodeSEXP);
-    Rcpp::traits::input_parameter< const List& >::type combo_fret(combo_fretSEXP);
-    Rcpp::traits::input_parameter< const List& >::type fret_delta_list(fret_delta_listSEXP);
-    Rcpp::traits::input_parameter< const List& >::type fret_delta_norms(fret_delta_normsSEXP);
-    Rcpp::traits::input_parameter< const arma::umat& >::type flowcode_combo_logical(flowcode_combo_logicalSEXP);
-    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type flowcode_fluors(flowcode_fluorsSEXP);
-    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type optimize_fluors(optimize_fluorsSEXP);
+    Rcpp::traits::input_parameter< const CharacterVector& >::type fluor_names(fluor_namesSEXP);
+    Rcpp::traits::input_parameter< const CharacterVector& >::type flowcode_fluors(flowcode_fluorsSEXP);
+    Rcpp::traits::input_parameter< const CharacterVector& >::type flowcode_tags(flowcode_tagsSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type flowcode_thresholds(flowcode_thresholdsSEXP);
+    Rcpp::traits::input_parameter< const CharacterVector& >::type valid_combos(valid_combosSEXP);
+    Rcpp::traits::input_parameter< const arma::imat& >::type flowcode_logical(flowcode_logicalSEXP);
+    Rcpp::traits::input_parameter< const List& >::type fret_spectra_list(fret_spectra_listSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type pos_thresholds(pos_thresholdsSEXP);
+    Rcpp::traits::input_parameter< const CharacterVector& >::type optimize_fluors(optimize_fluorsSEXP);
     Rcpp::traits::input_parameter< const List& >::type variants(variantsSEXP);
     Rcpp::traits::input_parameter< const List& >::type delta_list(delta_listSEXP);
     Rcpp::traits::input_parameter< const List& >::type delta_norms(delta_normsSEXP);
-    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type all_fluor_names(all_fluor_namesSEXP);
-    Rcpp::traits::input_parameter< const int >::type af_idx_in_spectra(af_idx_in_spectraSEXP);
-    Rcpp::traits::input_parameter< const int >::type k(kSEXP);
-    Rcpp::traits::input_parameter< const bool >::type weighted(weightedSEXP);
-    Rcpp::traits::input_parameter< const bool >::type cell_weighting(cell_weightingSEXP);
-    Rcpp::traits::input_parameter< const bool >::type cell_weight_regularize(cell_weight_regularizeSEXP);
-    Rcpp::traits::input_parameter< const int >::type nthreads(nthreadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(optimize_flowcode_unmix(raw_data, unmixed, combined_spectra, weights, pos_thresholds, af_idx, af_spectra, flowcode_ids, has_flowcode, combo_fret, fret_delta_list, fret_delta_norms, flowcode_combo_logical, flowcode_fluors, optimize_fluors, variants, delta_list, delta_norms, all_fluor_names, af_idx_in_spectra, k, weighted, cell_weighting, cell_weight_regularize, nthreads));
+    Rcpp::traits::input_parameter< int >::type k_opt(k_optSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    Rcpp::traits::input_parameter< bool >::type optimize(optimizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(unmix_flowcode_pipeline_cpp(raw_data, spectra, af_spectra, fluor_names, flowcode_fluors, flowcode_tags, flowcode_thresholds, valid_combos, flowcode_logical, fret_spectra_list, pos_thresholds, optimize_fluors, variants, delta_list, delta_norms, k_opt, n_threads, optimize));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_FlowCodeUnmixRcpp_optimize_flowcode_unmix", (DL_FUNC) &_FlowCodeUnmixRcpp_optimize_flowcode_unmix, 25},
+    {"_FlowCodeUnmixRcpp_unmix_flowcode_pipeline_cpp", (DL_FUNC) &_FlowCodeUnmixRcpp_unmix_flowcode_pipeline_cpp, 18},
     {NULL, NULL, 0}
 };
 
