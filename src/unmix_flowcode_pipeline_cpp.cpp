@@ -23,7 +23,7 @@ double quick_median(vec x) {
 }
 
 // [[Rcpp::export]]
-List unmix_flowcode_pipeline_cpp(
+arma::mat unmix_flowcode_pipeline_cpp(
     arma::mat raw_data,
     const arma::mat& spectra,
     const arma::mat& af_spectra,
@@ -31,7 +31,7 @@ List unmix_flowcode_pipeline_cpp(
     const CharacterVector& flowcode_fluors,
     const CharacterVector& flowcode_tags,
     const NumericVector& flowcode_thresholds,
-    const CharacterVector& valid_combos,    
+    const CharacterVector& valid_combos,
     const arma::imat& flowcode_logical,
     const List& fret_spectra_list,
     const arma::vec& pos_thresholds,
@@ -47,43 +47,43 @@ List unmix_flowcode_pipeline_cpp(
   uword n_fluors = spectra.n_rows;
   uword n_af = af_spectra.n_rows;
   int n_combos = valid_combos.size();
-  
+
   // --- 1. SERIAL PRE-CALCULATIONS & DEEP COPIES ---
   mat P = solve(spectra * spectra.t(), spectra);
   mat S_t = spectra.t();
   mat AF_t = af_spectra.t();
   mat v_library_af = P * AF_t;
   mat r_library_af = AF_t - (S_t * v_library_af);
-  
+
   vec r_dots_af(n_af);
   for(uword j = 0; j < n_af; ++j) {
     double d = dot(r_library_af.col(j), r_library_af.col(j));
     r_dots_af[j] = (d == 0) ? 1e-10 : d;
   }
-  
+
   std::vector<std::string> cpp_names = as<std::vector<std::string>>(fluor_names);
   std::vector<std::string> cpp_opt_names = as<std::vector<std::string>>(optimize_fluors);
   std::vector<std::string> v_names = as<std::vector<std::string>>(variants.names());
   std::vector<std::string> fc_fluor_names = as<std::vector<std::string>>(flowcode_fluors);
   std::vector<std::string> fc_tag_cpp = as<std::vector<std::string>>(flowcode_tags);
   std::vector<double> fc_thresh_cpp = as<std::vector<double>>(flowcode_thresholds);
-  
+
   std::map<std::string, int> name_to_idx;
   for(size_t i = 0; i < cpp_names.size(); ++i) name_to_idx[cpp_names[i]] = (int)i;
-  
+
   uvec fc_indices(fc_fluor_names.size());
   for(size_t i = 0; i < fc_fluor_names.size(); ++i) fc_indices[i] = name_to_idx[fc_fluor_names[i]];
-  
+
   std::map<std::string, int> combo_map;
   for(int i = 0; i < n_combos; ++i) combo_map[as<std::string>(valid_combos[i])] = i + 1;
-  
+
   size_t n_var = variants.size();
   std::vector<mat> v_mats(n_var);
   std::vector<mat> d_mats(n_var);
   std::vector<vec> dn_vecs(n_var);
   std::vector<int> var_to_master(n_var);
   std::vector<bool> should_opt(n_var, false);
-  
+
   for (size_t f = 0; f < n_var; ++f) {
     v_mats[f] = as<mat>(variants[f]);
     d_mats[f] = as<mat>(delta_list[f]);
@@ -93,10 +93,10 @@ List unmix_flowcode_pipeline_cpp(
     if (is_req && !dn_vecs[f].is_empty() && (max(dn_vecs[f]) > 1e-12)) should_opt[f] = true;
     var_to_master[f] = name_to_idx.count(v_names[f]) ? name_to_idx[v_names[f]] : -1;
   }
-  
+
   std::vector<mat> fret_libs_cpp(fret_spectra_list.size());
   for(int i = 0; i < (int)fret_spectra_list.size(); ++i) fret_libs_cpp[i] = as<mat>(fret_spectra_list[i]);
-  
+
   // --- 2. OUTPUT CONTAINERS ---
   mat unmixed_final(n_cells, n_fluors);
   vec AF_vals(n_cells);
@@ -104,11 +104,11 @@ List unmix_flowcode_pipeline_cpp(
   ivec flowcode_ids(n_cells);
   vec FlowCode_Intensity(n_cells, fill::zeros);
   mat fc_data(n_cells, n_combos, fill::zeros);
-  
+
 #ifdef _OPENMP
   omp_set_num_threads(n_threads);
 #endif
-  
+
   // --- 3. PARALLEL LOOP WITH THREAD-LOCAL STORAGE ---
 #pragma omp parallel for schedule(dynamic, 64)
   for(uword i = 0; i < n_cells; ++i) {
@@ -119,13 +119,13 @@ List unmix_flowcode_pipeline_cpp(
     static thread_local std::vector<std::pair<double, std::string>> tag_signals;
     static thread_local std::vector<std::pair<double, size_t>> fluor_order;
     static thread_local std::vector<uword> m_to_c_row, off_idx;
-    
+
     // Reset Scratchpads
     pos_tag_aliases.clear(); tag_signals.clear(); fluor_order.clear(); off_idx.clear();
     if(m_to_c_row.size() != n_var) m_to_c_row.assign(n_var, 0);
-    
+
     rowvec cell_raw = raw_data.row(i);
-    
+
     // A. AF Extraction
     vec init_f = (P * cell_raw.t());
     double min_err_af = datum::inf; double b_k_af = 0; uword b_idx_af = 0;
@@ -138,7 +138,7 @@ List unmix_flowcode_pipeline_cpp(
     AF_vals[i] = b_k_af; AF_idx[i] = (int)b_idx_af + 1;
     cell_resid_raw = cell_raw - (b_k_af * af_spectra.row(b_idx_af));
     cell_unmixed = (P * cell_resid_raw.t()).t();
-    
+
     // B. Debarcoding
     for(uword j = 0; j < fc_indices.n_elem; ++j) {
       double signal = cell_unmixed[fc_indices[j]];
@@ -158,7 +158,7 @@ List unmix_flowcode_pipeline_cpp(
       id = combo_map.count(key) ? combo_map[key] : n_combos + 1;
     } else if(pos_tag_aliases.size() > 0) id = n_combos + 1;
     flowcode_ids[i] = id;
-    
+
     // C. FRET Correction
     if(id > 0 && id <= n_combos) {
       const mat& f_lib = fret_libs_cpp[id-1];
@@ -181,7 +181,7 @@ List unmix_flowcode_pipeline_cpp(
       cell_resid_raw -= b_k_fret * f_lib.row(b_idx_fret);
       cell_unmixed -= (b_k_fret * v_lib_f.col(b_idx_fret)).t();
     }
-    
+
     // D. Optimization
     mat cell_spectra_final = spectra;
     if (optimize) {
@@ -206,7 +206,7 @@ List unmix_flowcode_pipeline_cpp(
           }
           std::sort(fluor_order.begin(), fluor_order.end(), std::greater<>());
           for (auto const& pair : fluor_order) {
-            size_t f_idx = pair.second; int m_idx = var_to_master[f_idx]; uword r_curr = m_to_c_row[f_idx]; 
+            size_t f_idx = pair.second; int m_idx = var_to_master[f_idx]; uword r_curr = m_to_c_row[f_idx];
             if (r_n > 1e-12) {
               vec sc = (d_mats[f_idx] * resid.t()) * unmixed_curr[r_curr] / (dn_vecs[f_idx] * r_n);
               uvec topK = sort_index(sc, "descend");
@@ -233,5 +233,23 @@ List unmix_flowcode_pipeline_cpp(
       double m_val = quick_median(vals); FlowCode_Intensity[i] = m_val; fc_data(i, id-1) = m_val;
     }
   }
-  return List::create(_["unmixed"] = unmixed_final, _["AF"] = AF_vals, _["af.idx"] = AF_idx, _["flowcode.ids"] = flowcode_ids, _["FlowCode"] = FlowCode_Intensity, _["fc.data"] = fc_data);
+
+  // Return results in a combined matrix
+  // Calculate total columns
+  int n_unmixed = unmixed_final.n_cols;
+  int n_fc_data = fc_data.n_cols;
+  int total_cols = n_unmixed + 3 + n_fc_data;
+  int n_rows = unmixed_final.n_rows;
+
+  // Pre-allocate the result matrix
+  arma::mat res(n_rows, total_cols);
+
+  // Fill the matrix
+  res.cols(0, n_unmixed - 1) = unmixed_final;
+  res.col(n_unmixed)     = AF_vals;
+  res.col(n_unmixed + 1) = arma::conv_to<arma::vec>::from(AF_idx);
+  res.col(n_unmixed + 2) = FlowCode_Intensity;
+  res.cols(n_unmixed + 3, total_cols - 1) = fc_data;
+
+  return res;
 }

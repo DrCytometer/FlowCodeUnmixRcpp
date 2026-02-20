@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // unmix_flowcode_pipeline_cpp
-List unmix_flowcode_pipeline_cpp(arma::mat raw_data, const arma::mat& spectra, const arma::mat& af_spectra, const CharacterVector& fluor_names, const CharacterVector& flowcode_fluors, const CharacterVector& flowcode_tags, const NumericVector& flowcode_thresholds, const CharacterVector& valid_combos, const arma::imat& flowcode_logical, const List& fret_spectra_list, const arma::vec& pos_thresholds, const CharacterVector& optimize_fluors, const List& variants, const List& delta_list, const List& delta_norms, int k_opt, int n_threads, bool optimize);
+arma::mat unmix_flowcode_pipeline_cpp(arma::mat raw_data, const arma::mat& spectra, const arma::mat& af_spectra, const CharacterVector& fluor_names, const CharacterVector& flowcode_fluors, const CharacterVector& flowcode_tags, const NumericVector& flowcode_thresholds, const CharacterVector& valid_combos, const arma::imat& flowcode_logical, const List& fret_spectra_list, const arma::vec& pos_thresholds, const CharacterVector& optimize_fluors, const List& variants, const List& delta_list, const List& delta_norms, int k_opt, int n_threads, bool optimize);
 RcppExport SEXP _FlowCodeUnmixRcpp_unmix_flowcode_pipeline_cpp(SEXP raw_dataSEXP, SEXP spectraSEXP, SEXP af_spectraSEXP, SEXP fluor_namesSEXP, SEXP flowcode_fluorsSEXP, SEXP flowcode_tagsSEXP, SEXP flowcode_thresholdsSEXP, SEXP valid_combosSEXP, SEXP flowcode_logicalSEXP, SEXP fret_spectra_listSEXP, SEXP pos_thresholdsSEXP, SEXP optimize_fluorsSEXP, SEXP variantsSEXP, SEXP delta_listSEXP, SEXP delta_normsSEXP, SEXP k_optSEXP, SEXP n_threadsSEXP, SEXP optimizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

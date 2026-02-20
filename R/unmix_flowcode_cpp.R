@@ -141,7 +141,7 @@ unmix.flowcode.cpp <- function(
   valid.combos <- apply(
     combo.df[ , -1 ], 1, function( x ) paste( sort( toupper( x ) ), collapse = "_" ) )
   fc.tags <- toupper( names( flowcode.fluors ) )
-  
+
   # call C++ pipeline
   results <- unmix_flowcode_pipeline_cpp(
     raw_data = as.matrix( raw.data ),
@@ -163,18 +163,9 @@ unmix.flowcode.cpp <- function(
     n_threads = threads,
     optimize = optimize
   )
-  
-  # Final assembly of the return matrix
-  unmixed <- cbind(
-    results$unmixed, 
-    AF = results$AF, 
-    `AF Index` = results$af.idx, 
-    FlowCode = results$FlowCode, 
-    results$fc.data
-  )
-  
-  colnames( unmixed ) <- c(
+
+  colnames( results ) <- c(
     fluorophores, "AF", "AF Index", "FlowCode", paste( "Tag:", combo.df$Id ) )
 
-  return( unmixed )
+  return( results )
 }
