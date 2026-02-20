@@ -131,7 +131,7 @@ arma::mat unmix_flowcode_pipeline_cpp(
     double min_err_af = datum::inf; double b_k_af = 0; uword b_idx_af = 0;
     for(uword j=0; j<n_af; ++j) {
       double k = dot(cell_raw, r_library_af.col(j)) / r_dots_af[j];
-      if(k < 0) k = 0;
+      //if(k < 0) k = 0; // non-negativity constraint for AF fitting--removed
       double err = sum(abs(init_f - (k * v_library_af.col(j))));
       if(err < min_err_af) { min_err_af = err; b_k_af = k; b_idx_af = j; }
     }

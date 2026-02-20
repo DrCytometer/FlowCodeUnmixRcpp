@@ -164,8 +164,7 @@ unmix.flowcode.cpp <- function(
     optimize = optimize
   )
 
-  colnames( results ) <- c(
-    fluorophores, "AF", "AF Index", "FlowCode", paste( "Tag:", combo.df$Id ) )
+  colnames( results ) <- c( fluorophores, "AF", "AF Index", "FlowCode", combo.df$Id )
 
   return( results )
 }
