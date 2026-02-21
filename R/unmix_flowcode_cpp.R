@@ -144,7 +144,7 @@ unmix.flowcode.cpp <- function(
 
   # call C++ pipeline
   results <- unmix_flowcode_pipeline_cpp(
-    raw_data = as.matrix( raw.data ),
+    raw_data_in = as.matrix( raw.data ),
     spectra = as.matrix( spectra ),
     af_spectra = as.matrix( af.spectra ),
     fluor_names = rownames( spectra ),
