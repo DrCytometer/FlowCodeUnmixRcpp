@@ -11,6 +11,40 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// fit_af_joint_cpp
+List fit_af_joint_cpp(const arma::mat& raw_data, const arma::mat& unmixed, const arma::mat& spectra, const arma::mat& af_spectra, double alpha, int n_threads);
+RcppExport SEXP _FlowCodeUnmixRcpp_fit_af_joint_cpp(SEXP raw_dataSEXP, SEXP unmixedSEXP, SEXP spectraSEXP, SEXP af_spectraSEXP, SEXP alphaSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type raw_data(raw_dataSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type unmixed(unmixedSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type spectra(spectraSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type af_spectra(af_spectraSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(fit_af_joint_cpp(raw_data, unmixed, spectra, af_spectra, alpha, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// fit_fret_joint_cpp
+List fit_fret_joint_cpp(const arma::mat& raw_data, const arma::mat& unmixed, const arma::mat& spectra, const Rcpp::List& fret_spectra_list, const arma::ivec& cell_barcode_ids, const Rcpp::List& off_indices_list, double alpha, int n_threads);
+RcppExport SEXP _FlowCodeUnmixRcpp_fit_fret_joint_cpp(SEXP raw_dataSEXP, SEXP unmixedSEXP, SEXP spectraSEXP, SEXP fret_spectra_listSEXP, SEXP cell_barcode_idsSEXP, SEXP off_indices_listSEXP, SEXP alphaSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type raw_data(raw_dataSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type unmixed(unmixedSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type spectra(spectraSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type fret_spectra_list(fret_spectra_listSEXP);
+    Rcpp::traits::input_parameter< const arma::ivec& >::type cell_barcode_ids(cell_barcode_idsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type off_indices_list(off_indices_listSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(fit_fret_joint_cpp(raw_data, unmixed, spectra, fret_spectra_list, cell_barcode_ids, off_indices_list, alpha, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
 // unmix_flowcode_pipeline_cpp
 arma::mat unmix_flowcode_pipeline_cpp(arma::mat raw_data_in, const arma::mat& spectra, const arma::mat& af_spectra, const CharacterVector& fluor_names, const CharacterVector& flowcode_fluors, const CharacterVector& flowcode_tags, const NumericVector& flowcode_thresholds, const CharacterVector& valid_combos, const arma::imat& flowcode_logical, const List& fret_spectra_list, const arma::vec& pos_thresholds, const CharacterVector& optimize_fluors, const List& variants, const List& delta_list, const List& delta_norms, int k_opt, int n_threads, bool optimize);
 RcppExport SEXP _FlowCodeUnmixRcpp_unmix_flowcode_pipeline_cpp(SEXP raw_data_inSEXP, SEXP spectraSEXP, SEXP af_spectraSEXP, SEXP fluor_namesSEXP, SEXP flowcode_fluorsSEXP, SEXP flowcode_tagsSEXP, SEXP flowcode_thresholdsSEXP, SEXP valid_combosSEXP, SEXP flowcode_logicalSEXP, SEXP fret_spectra_listSEXP, SEXP pos_thresholdsSEXP, SEXP optimize_fluorsSEXP, SEXP variantsSEXP, SEXP delta_listSEXP, SEXP delta_normsSEXP, SEXP k_optSEXP, SEXP n_threadsSEXP, SEXP optimizeSEXP) {
@@ -41,6 +75,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_FlowCodeUnmixRcpp_fit_af_joint_cpp", (DL_FUNC) &_FlowCodeUnmixRcpp_fit_af_joint_cpp, 6},
+    {"_FlowCodeUnmixRcpp_fit_fret_joint_cpp", (DL_FUNC) &_FlowCodeUnmixRcpp_fit_fret_joint_cpp, 8},
     {"_FlowCodeUnmixRcpp_unmix_flowcode_pipeline_cpp", (DL_FUNC) &_FlowCodeUnmixRcpp_unmix_flowcode_pipeline_cpp, 18},
     {NULL, NULL, 0}
 };

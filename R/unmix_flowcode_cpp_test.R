@@ -1,6 +1,6 @@
-# unmix_flowcode_cpp.r
+# unmix_flowcode_cpp_test.r
 
-#' @title Unmix FlowCode Rcpp
+#' @title Unmix FlowCode Rcpp Test
 #'
 #' @description
 #' Unmix FlowCode samples, correcting FRET errors and debarcoding the data.
@@ -42,7 +42,7 @@
 #'
 #' @export
 
-unmix.flowcode.cpp <- function(
+unmix.flowcode.cpp.test <- function(
     raw.data,
     spectra,
     af.spectra,
@@ -143,7 +143,7 @@ unmix.flowcode.cpp <- function(
   fc.tags <- toupper( names( flowcode.fluors ) )
 
   # call C++ pipeline
-  results <- unmix_flowcode_pipeline_cpp(
+  results <- unmix_flowcode_pipeline_cpp_test6(
     raw_data_in = as.matrix( raw.data ),
     spectra = as.matrix( spectra ),
     af_spectra = as.matrix( af.spectra ),
@@ -159,9 +159,10 @@ unmix.flowcode.cpp <- function(
     variants = variants,
     delta_list = delta.list,
     delta_norms = delta.norms,
-    k_opt = k,
+    #k_opt = k,
     n_threads = threads,
-    optimize = optimize
+    optimize = optimize,
+    max_iter = 5
   )
 
   colnames( results ) <- c( fluorophores, "AF", "AF Index", "FlowCode", combo.df$Id )
