@@ -1,23 +1,83 @@
 #!/bin/sh
 
-echo "Checking for OpenMP support..."
+# configure -- FlowCodeUnmixRcpp
+#
+# On macOS: detects or installs Homebrew + libomp, then enables OpenMP.
+# On Linux: OpenMP is handled natively by GCC; no detection needed.
+# On Windows: configure is not run; src/Makevars.win is used directly.
 
-# Default: no OpenMP
-OPENMP_FLAGS=""
+OPENMP_CPPFLAGS=""
+OPENMP_LIBS=""
+FLIBS_LINE=""
 
-# macOS detection
 if [ "$(uname)" = "Darwin" ]; then
-  # Check if clang supports OpenMP
-  if clang -fopenmp -dM -E - < /dev/null >/dev/null 2>&1; then
-    OPENMP_FLAGS="-Xpreprocessor -fopenmp -lomp"
+
+  # --- Ensure Homebrew is present ---
+  if ! command -v brew >/dev/null 2>&1; then
+    if [ -t 1 ]; then
+      echo "configure: Homebrew not found -- installing Homebrew"
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      for BREW_BIN in /opt/homebrew/bin /usr/local/bin; do
+        if [ -f "${BREW_BIN}/brew" ]; then
+          export PATH="${BREW_BIN}:${PATH}"
+          break
+        fi
+      done
+    else
+      echo "configure: Homebrew not found and session is non-interactive -- cannot auto-install"
+      echo "configure: to enable OpenMP, open a terminal and run:"
+      echo "configure:   /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+      echo "configure:   brew install libomp"
+      echo "configure: then reinstall the package"
+      echo "configure: building without OpenMP (single-threaded) for now"
+    fi
   fi
+
+  # --- Ensure libomp is present ---
+  LIBOMP_DIR=""
+  for HOMEBREW_PREFIX in /opt/homebrew /usr/local; do
+    if [ -d "${HOMEBREW_PREFIX}/opt/libomp" ]; then
+      LIBOMP_DIR="${HOMEBREW_PREFIX}/opt/libomp"
+      break
+    fi
+  done
+
+  if [ -z "${LIBOMP_DIR}" ] && command -v brew >/dev/null 2>&1; then
+    if [ -t 1 ]; then
+      echo "configure: libomp not found -- installing via Homebrew"
+      brew install libomp
+      for HOMEBREW_PREFIX in /opt/homebrew /usr/local; do
+        if [ -d "${HOMEBREW_PREFIX}/opt/libomp" ]; then
+          LIBOMP_DIR="${HOMEBREW_PREFIX}/opt/libomp"
+          break
+        fi
+      done
+    else
+      echo "configure: libomp not found and session is non-interactive -- cannot auto-install"
+      echo "configure: to enable OpenMP, open a terminal and run: brew install libomp"
+      echo "configure: then reinstall the package"
+      echo "configure: building without OpenMP (single-threaded) for now"
+    fi
+  fi
+
+  if [ -n "${LIBOMP_DIR}" ]; then
+    OPENMP_CPPFLAGS="-Xpreprocessor -fopenmp -I${LIBOMP_DIR}/include"
+    OPENMP_LIBS="-L${LIBOMP_DIR}/lib -lomp"
+    echo "configure: OpenMP enabled using libomp at ${LIBOMP_DIR}"
+    echo "configure: note -- keep n_threads conservative to avoid conflict with Accelerate BLAS"
+  else
+    echo "configure: building without OpenMP (single-threaded C++ only)"
+  fi
+
 else
-  # For Linux/Windows, R's SHLIB_OPENMP_CXXFLAGS is enough
-  OPENMP_FLAGS="$(SHLIB_OPENMP_CXXFLAGS)"
+  # Linux: gfortran expected; include $(FLIBS). OpenMP via GCC natively.
+  FLIBS_LINE='$(FLIBS)'
 fi
 
-# Write a Makevars.local that will be sourced automatically
-echo "PKG_CXXFLAGS += ${OPENMP_FLAGS}" > src/Makevars.local
-echo "PKG_LIBS += ${OPENMP_FLAGS}" >> src/Makevars.local
+sed \
+  -e "s|@OPENMP_CPPFLAGS@|${OPENMP_CPPFLAGS}|g" \
+  -e "s|@OPENMP_LIBS@|${OPENMP_LIBS}|g" \
+  -e "s|@FLIBS_LINE@|${FLIBS_LINE}|g" \
+  src/Makevars.in > src/Makevars
 
-echo "OpenMP flags set to: ${OPENMP_FLAGS}"
+exit 0
