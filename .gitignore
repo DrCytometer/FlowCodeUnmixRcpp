@@ -14,3 +14,5 @@ src/*.dll
 src/*.dll.a
 src-i386/
 src-x64/
+.positai
+src/Makevars
